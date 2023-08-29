@@ -1,3 +1,4 @@
+<!-- ver 2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,19 +37,12 @@
     }
 </style>
 <script>
-var res = 10
-var grid_X
-var grid_Y
-var xc1=prompt("Напишіть координату X заряду 1 (від 0 до 700)")
-var xc2=prompt("Напишіть координату X заряду 2 (від 0 до 700)")
+var res = 10;
+var grid_X, grid_Y;
+var charges = [];
 
-var yc1=prompt("Напишіть координату Y заряду 1 (від 0 до 700)")
-var yc2=prompt("Напишіть координату Y заряду 2 (від 0 до 700)")
-
-var qc1=prompt("Напишіть заряд q заряду 1 (краще від -1000 до 1000)")
-var qc2=prompt("Напишіть заряд q заряду 2 (краще від -1000 до 1000)")
 function setup() {
-    createCanvas(700, 700);
+    createCanvas(200, 200);
 
     grid_X = new Array(width / res);
     grid_Y = new Array(width / res);
@@ -56,38 +50,38 @@ function setup() {
         grid_X[i] = new Array(height / res);
         grid_Y[i] = new Array(height / res);
     }
-    c1 = new Charge(xc1, yc1, qc1)
-    c2 = new Charge(xc2, yc2, qc2)
+    
+    charges.push(new Charge("Заряд 1", prompt("Координата X заряда 1 (0-200)"), prompt("Координата Y заряда 1 (0-200)"), prompt("Заряд q заряда 1 (-1000-1000)")));
+    charges.push(new Charge("Заряд 2", prompt("Координата X заряда 2 (0-200)"), prompt("Координата Y заряда 2 (0-200)"), prompt("Заряд q заряда 2 (-1000-1000)")));
 
-    vectorGrid()
+    vectorGrid();
 }
+
 function preload() {
     backgroundImage = loadImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_6vFhbsMYmPnQbkB0GWagI6uftU8cqBch3g&usqp=CAU');
 }
+
 function draw() {
-  background(backgroundImage);
-    drawGrid()
-    c1.display()
-    c2.display()
-    drawLines()
-
-
+    background(backgroundImage);
+    drawGrid();
+    
+    for (var i = 0; i < charges.length; i++) {
+        charges[i].display();
+    }
+    
+    drawLines();
 }
 
-
-
-function Charge(x, y, v) {
-    this.x = x
-    this.y = y
-    this.v = v
-
-
-    this.display = function() {
-        if (this.v > 0) {
-            fill(255, 0, 0, 100);
-        } else if (this.v < 0) {
-            fill(0, 0, 255, 100);
-        }
+class Charge {
+    constructor(name, x, y, v) {
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.v = v;
+    }
+    
+    display() {
+        fill(this.v > 0 ? 255 : 0, 0, this.v < 0 ? 255 : 0, 100);
         stroke(0);
         strokeWeight(1);
         ellipse(this.x, this.y, 15, 15);
@@ -95,67 +89,48 @@ function Charge(x, y, v) {
 }
 
 function drawGrid() {
-    stroke(0, 50)
+    stroke(0, 50);
     for (var i = 0; i < width; i += 20) {
-        line(0, i, width, i)
-        line(i, 0, i, height)
-
+        line(0, i, width, i);
+        line(i, 0, i, height);
     }
 }
 
 function vectorGrid() {
-    //print("Vector grid")
-    var x1 = 0;
     for (var i = 0; i < height / res; i++) {
         for (var j = 0; j < height / res; j++) {
-            x = res / 2 + i * res
-            y = res / 2 + j * res
-            dx = x - c1.x;
-            dy = y - c1.y;
-            d1 = sqrt(dx * dx + dy * dy);
-            E1 = c1.v / (d1 * d1);
-            E1x = dx * E1 / d1;
-            E1y = dy * E1 / d1;
-
-            dxn = x - c2.x;
-            dyn = y - c2.y;
-            d2 = sqrt(dxn * dxn + dyn * dyn);
-            E2 = c2.v / (d2 * d2);
-            E2x = dxn * E2 / d2;
-            E2y = dyn * E2 / d2;
-
-            EEx = E1x + E2x;
-            EEy = E1y + E2y;
-            EE = sqrt(EEx * EEx + EEy * EEy);
-
-            deltax = 15 * EEx / EE;
-            deltay = 15 * EEy / EE;
-            grid_X[i][j] = deltax
-            grid_Y[i][j] = deltay
-
-
-
+            var x = res / 2 + i * res;
+            var y = res / 2 + j * res;
+            var gridXSum = 0, gridYSum = 0;
+            
+            for (var c of charges) {
+                var dx = x - c.x;
+                var dy = y - c.y;
+                var d = sqrt(dx * dx + dy * dy);
+                var E = c.v / (d * d);
+                var Ex = dx * E / d;
+                var Ey = dy * E / d;
+                
+                gridXSum += Ex;
+                gridYSum += Ey;
+            }
+            
+            var EE = sqrt(gridXSum * gridXSum + gridYSum * gridYSum);
+            grid_X[i][j] = 15 * gridXSum / EE;
+            grid_Y[i][j] = 15 * gridYSum / EE;
         }
-
     }
 }
 
-
 function drawLines() {
-
-
     for (var i = 0; i < 5000; i++) {
+        var x = random(width);
+        var xf = floor(x / res);
+        var y = random(height);
+        var yf = floor(y / res);
 
-
-        x = random(width);
-        var xf = floor(x / (res));
-        y = random(height);
-        var yf = floor(y / (res));
-
-        stroke(0, 70) //попробовать добавить изменение параметра 70 для более жирных линий
-        line(x, y, x + grid_X[xf][yf], y + grid_Y[xf][yf])
-
-
+        stroke(0, 70);
+        line(x, y, x + grid_X[xf][yf], y + grid_Y[xf][yf]);
     }
 }
 </script>
