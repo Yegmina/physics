@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electric Field Visualization</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+</head>
+<body>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        background-color: #f0f0f0;
+        font-family: Arial, sans-serif;
+    }
+    
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: url('https://starwalk.space/gallery/images/what-is-space/1920x1080.jpg') no-repeat center center;
+        background-size: cover;
+    }
+    
+    h1 {
+        position: relative;
+        z-index: 1;
+        color: #333;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+</style>
+<script>
+var res = 10
+var grid_X
+var grid_Y
+var xc1=prompt("Напишіть координату X заряду 1 (від 0 до 700)")
+var xc2=prompt("Напишіть координату X заряду 2 (від 0 до 700)")
+
+var yc1=prompt("Напишіть координату Y заряду 1 (від 0 до 700)")
+var yc2=prompt("Напишіть координату Y заряду 2 (від 0 до 700)")
+
+var qc1=prompt("Напишіть заряд q заряду 1 (краще від -1000 до 1000)")
+var qc2=prompt("Напишіть заряд q заряду 2 (краще від -1000 до 1000)")
+function setup() {
+    createCanvas(700, 700);
+
+    grid_X = new Array(width / res);
+    grid_Y = new Array(width / res);
+    for (var i = 0; i < width / res; i++) {
+        grid_X[i] = new Array(height / res);
+        grid_Y[i] = new Array(height / res);
+    }
+    c1 = new Charge(xc1, yc1, qc1)
+    c2 = new Charge(xc2, yc2, qc2)
+
+    vectorGrid()
+}
+function preload() {
+    backgroundImage = loadImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_6vFhbsMYmPnQbkB0GWagI6uftU8cqBch3g&usqp=CAU');
+}
+function draw() {
+  background(backgroundImage);
+    drawGrid()
+    c1.display()
+    c2.display()
+    drawLines()
+
+
+}
+
+
+
+function Charge(x, y, v) {
+    this.x = x
+    this.y = y
+    this.v = v
+
+
+    this.display = function() {
+        if (this.v > 0) {
+            fill(255, 0, 0, 100);
+        } else if (this.v < 0) {
+            fill(0, 0, 255, 100);
+        }
+        stroke(0);
+        strokeWeight(1);
+        ellipse(this.x, this.y, 15, 15);
+    }
+}
+
+function drawGrid() {
+    stroke(0, 50)
+    for (var i = 0; i < width; i += 20) {
+        line(0, i, width, i)
+        line(i, 0, i, height)
+
+    }
+}
+
+function vectorGrid() {
+    //print("Vector grid")
+    var x1 = 0;
+    for (var i = 0; i < height / res; i++) {
+        for (var j = 0; j < height / res; j++) {
+            x = res / 2 + i * res
+            y = res / 2 + j * res
+            dx = x - c1.x;
+            dy = y - c1.y;
+            d1 = sqrt(dx * dx + dy * dy);
+            E1 = c1.v / (d1 * d1);
+            E1x = dx * E1 / d1;
+            E1y = dy * E1 / d1;
+
+            dxn = x - c2.x;
+            dyn = y - c2.y;
+            d2 = sqrt(dxn * dxn + dyn * dyn);
+            E2 = c2.v / (d2 * d2);
+            E2x = dxn * E2 / d2;
+            E2y = dyn * E2 / d2;
+
+            EEx = E1x + E2x;
+            EEy = E1y + E2y;
+            EE = sqrt(EEx * EEx + EEy * EEy);
+
+            deltax = 15 * EEx / EE;
+            deltay = 15 * EEy / EE;
+            grid_X[i][j] = deltax
+            grid_Y[i][j] = deltay
+
+
+
+        }
+
+    }
+}
+
+
+function drawLines() {
+
+
+    for (var i = 0; i < 5000; i++) {
+
+
+        x = random(width);
+        var xf = floor(x / (res));
+        y = random(height);
+        var yf = floor(y / (res));
+
+        stroke(0, 70) //попробовать добавить изменение параметра 70 для более жирных линий
+        line(x, y, x + grid_X[xf][yf], y + grid_Y[xf][yf])
+
+
+    }
+}
+</script>
+</body>
+</html>
