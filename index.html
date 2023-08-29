@@ -42,7 +42,7 @@ var grid_X, grid_Y;
 var charges = [];
 
 function setup() {
-    createCanvas(200, 200);
+    createCanvas(700, 700);
 
     grid_X = new Array(width / res);
     grid_Y = new Array(width / res);
@@ -51,8 +51,8 @@ function setup() {
         grid_Y[i] = new Array(height / res);
     }
     
-    charges.push(new Charge("Заряд 1", prompt("Координата X заряда 1 (0-200)"), prompt("Координата Y заряда 1 (0-200)"), prompt("Заряд q заряда 1 (-1000-1000)")));
-    charges.push(new Charge("Заряд 2", prompt("Координата X заряда 2 (0-200)"), prompt("Координата Y заряда 2 (0-200)"), prompt("Заряд q заряда 2 (-1000-1000)")));
+    charges.push(new Charge("Заряд 1", prompt("Координата X заряда 1 (0-700)"), prompt("Координата Y заряда 1 (0-700)"), prompt("Заряд q заряда 1 (-1000-1000)")));
+    charges.push(new Charge("Заряд 2", prompt("Координата X заряда 2 (0-700)"), prompt("Координата Y заряда 2 (0-700)"), prompt("Заряд q заряда 2 (-1000-1000)")));
 
     vectorGrid();
 }
