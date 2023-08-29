@@ -1,4 +1,3 @@
-<!-- ver 2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +41,7 @@ var grid_X, grid_Y;
 var charges = [];
 
 function setup() {
-    createCanvas(700, 700);
+    createCanvas(300, 300);
 
     grid_X = new Array(width / res);
     grid_Y = new Array(width / res);
@@ -51,8 +50,8 @@ function setup() {
         grid_Y[i] = new Array(height / res);
     }
     
-    charges.push(new Charge("Заряд 1", prompt("Координата X заряда 1 (0-700)"), prompt("Координата Y заряда 1 (0-700)"), prompt("Заряд q заряда 1 (-1000-1000)")));
-    charges.push(new Charge("Заряд 2", prompt("Координата X заряда 2 (0-700)"), prompt("Координата Y заряда 2 (0-700)"), prompt("Заряд q заряда 2 (-1000-1000)")));
+    charges.push(new Charge("Заряд 1", prompt("Координата X заряда 1 (0-300)"), prompt("Координата Y заряда 1 (0-300)"), prompt("Заряд q заряда 1 (-1000-1000)")));
+    charges.push(new Charge("Заряд 2", prompt("Координата X заряда 2 (0-300)"), prompt("Координата Y заряда 2 (0-300)"), prompt("Заряд q заряда 2 (-1000-1000)")));
 
     vectorGrid();
 }
@@ -123,13 +122,13 @@ function vectorGrid() {
 }
 
 function drawLines() {
-    for (var i = 0; i < 5000; i++) {
+    for (var i = 0; i < 400; i++) { // Draw more lines
         var x = random(width);
         var xf = floor(x / res);
         var y = random(height);
         var yf = floor(y / res);
 
-        stroke(0, 70);
+        stroke(0, 60); // Adjust line opacity
         line(x, y, x + grid_X[xf][yf], y + grid_Y[xf][yf]);
     }
 }
