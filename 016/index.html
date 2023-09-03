@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+        crossorigin="anonymous">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title></title>
+    <script type="text/javascript">
+        var max = 100000;
+        var heads = 0;
+        var tails = 0;
+        var periods = 0; // Добавляем переменную для периодов полураспада
+        var chartData = {
+            labels: [], // Здесь будут периоды полураспада
+            datasets: [{
+                label: 'Кількість нерозпавшихся ядер', // Название набора данных
+                data: [], // Здесь будут значения количества не распавшихся ядер
+                borderColor: 'rgba(75, 192, 192, 1)', // Цвет линии
+                borderWidth: 2 // Толщина линии
+            }]
+        };
+    </script>
+    <style type="text/css">
+        input {
+            font-size: 34px;
+        }
+
+        label {
+            font-size: 42px;
+        }
+
+        legend {
+            font-size: 42px;
+        }
+
+        .my1 {
+            font-size: 34px;
+        }
+
+        .container-fluid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 50%;
+        }
+    </style>
+</head>
+<body style="background: #f0f0f0">
+    <div class="container-fluid">
+        <div class="container">
+            <legend>Лабораторна робота №016</legend>
+            <div class="col-md-1 fix">
+                <label class="">Всього:</label>
+                <input type="number" id="text_id" aria-describedby="emailHelp" name="count" onchange="inputNum();"
+                    value="100000">
+            </div>
+
+            <div class="col-md-1 fix">
+                <label>З гербом (тобто ядра, які не розпалися):</label>
+                <input type="text" id="lbl_1">
+            </div>
+
+            <div class="col-md-1 fix">
+                <label>З числом (тобто ядра, які розпалися):</label>
+                <input type="text" id="lbl_2">
+            </div><br>
+            <div>
+                <label> </label>
+                <button class="my1 btn btn-primary " id="btn" onclick="shake();">Підкинути</button>
+                <button class="my1 btn btn-primary " id="btn2" onclick="location.reload();">Оновити</button>
+            </div>
+        </div>
+
+        <!-- Перемещенный элемент canvas для графика -->
+        <div class="container">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line', // Тип графика (линейный)
+            data: chartData, // Используем нашу переменную chartData для данных
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Періоди'
+                        }
+                    },
+                    y: {
+                        min: 0, // Минимальное значение на оси Y
+                        max: max, // Максимальное значение на оси Y (начальное значение)
+                        ticks: {
+                            stepSize: 10 // Шаг значений на оси Y
+                        },
+                        title: {
+                            display: true,
+                            text: 'Кількість нерозпавшихся ядер'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Функция для добавления данных о полураспаде
+        function addData(label, value) {
+            chartData.labels.push(label);
+            chartData.datasets[0].data.push(value);
+            myChart.update(); // Обновить график после добавления данных
+        }
+
+        function getRandomInt(max) {
+            var rn = 0;
+            for (let i = 0; i <= max; i++) {
+                if (Math.random() < 0.5001) rn++;
+            }
+            return rn;
+        }
+
+        function shake() {
+            document.getElementById('text_id').value = max;
+            heads = getRandomInt(max);
+            if (heads > max) heads = max;
+            tails = max - heads;
+            document.getElementById('lbl_1').value = heads;
+            document.getElementById('lbl_2').value = tails;
+            max = heads;
+            periods++; // Увеличиваем количество периодов полураспада
+            addData(periods, max); // Добавить данные на график после каждого полураспада
+        }
+
+        function inputNum() {
+            max = parseInt(document.getElementById('text_id').value);
+            chartData.datasets[0].data = []; // Очищаем данные на графике при изменении значения
+            chartData.labels = []; // Очищаем метки
+            myChart.update(); // Обновляем график
+            periods = 0; // Сбрасываем количество периодов
+        }
+    </script>
+</body>
+</html>
